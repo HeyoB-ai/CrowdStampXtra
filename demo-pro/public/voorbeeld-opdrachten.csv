@@ -1,0 +1,12 @@
+﻿Referentie;Omschrijving;Klant;Straat;Postcode;Plaats;Startdatum;Einddatum;Contractvorm;Aanneemsom;Btw;Regel soort;Regel omschrijving;Aantal;Eenheid;Kostprijs;Verkoopprijs
+VF-2026-01;Renovatie 8 badkamers Vondelflat;Woningstichting GroenWest;Vondellaan 10-24;3442 AB;Woerden;05-10-2026;27-11-2026;aanneemsom;58.400,00;21;arbeid;Sloopwerk en afvoer;64;uur;38,00;62,00
+VF-2026-01;;;;;;;;;;;arbeid;Leidingwerk;80;uur;36,00;60,00
+VF-2026-01;;;;;;;;;;;onderaanneming;Tegelwerk (Visser);200;uur;45,00;65,00
+VF-2026-01;;;;;;;;;;;materiaal;Sanitairset;8;set;1.180,00;1.450,00
+VF-2026-01;;;;;;;;;;;materiaal;Wand- en vloertegels;320;m2;24,00;32,00
+VF-2026-01;;;;;;;;;;;materieel;Container;4;stuk;420,00;480,00
+KZ-2026-07;Kozijnen vervangen achtergevel blok C;VvE Parkzicht Nieuwegein;Parkzichtlaan 50-96;3437 AB;Nieuwegein;12-10-2026;30-10-2026;regie;;21;arbeid;Demontage en montage kozijnen;120;uur;38,00;62,00
+KZ-2026-07;;;;;;;;;;;materiaal;Kunststof kozijnen incl. beglazing;24;stuk;640,00;820,00
+KZ-2026-07;;;;;;;;;;;materieel;Rolsteiger;3;week;95,00;130,00
+SW-2026-03;Buitenschilderwerk 6 woningen Kamerik;Woningstichting GroenWest;Mijzijde 100-110;3471 GN;Kamerik;19-10-2026;13-11-2026;aanneemsom;19.800,00;9;arbeid;Schilderwerk kozijnen en boeidelen;240;uur;35,00;58,00
+SW-2026-03;;;;;;;;;;;materiaal;Verf, primer en kit;1;post;2.100,00;2.850,00

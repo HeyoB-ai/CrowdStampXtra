@@ -908,7 +908,7 @@ footer{
       <h2 class="modal-title" id="demo-title">Plan een demo</h2>
       <p class="modal-sub" id="demo-sub">Laat je gegevens achter, dan plannen we een persoonlijke rondleiding door CrowdStamp.</p>
 
-      <a class="modal-btn" id="demo-open-link" href="#" target="_blank" rel="noopener" style="text-decoration:none;margin-top:0">Open de demo</a>
+      <a class="modal-btn" id="demo-open-link" href="#" style="text-decoration:none;margin-top:0">Open de demo</a>
 
       <button type="button" class="demo-toggle" id="demo-toggle" onclick="toggleDemoForm()" aria-expanded="false" aria-controls="demo-form">
         Liever een persoonlijke rondleiding?
@@ -949,7 +949,7 @@ footer{
       </div>
       <h2 class="modal-title">Bedankt!</h2>
       <p class="modal-sub">We nemen binnen 1 werkdag contact op om een rondleiding in te plannen.</p>
-      <a class="modal-btn" id="demo-success-link" href="#" target="_blank" rel="noopener" style="text-decoration:none;display:none">Bekijk ondertussen de demo</a>
+      <a class="modal-btn" id="demo-success-link" href="#" style="text-decoration:none;display:none">Bekijk ondertussen de demo</a>
       <button class="modal-btn" type="button" onclick="closeDemoModal()" style="background:var(--ink)">Sluiten</button>
     </div>
   </div>
@@ -1060,8 +1060,8 @@ const SIGNUP_ENABLED = false;
 // DEMO_LIVE = false → geen knop "Open de demo": de modal heet "Plan een demo" en toont
 //                     direct het rondleidingsformulier (aanvraag via Netlify Forms).
 // DEMO_LIVE = true  → knop "Open de demo" naar DEMO_URL, formulier inklapbaar eronder.
-const DEMO_LIVE = false;
-const DEMO_URL = 'https://demo.crowdstamp.nl'; // TODO: invullen zodra de demo online staat
+const DEMO_LIVE = true;
+const DEMO_URL = '/demo'; // CrowdStamp Pro demo, gebouwd uit /demo-pro (zie netlify.toml)
 
 function openSignupModal() {
   if (SIGNUP_ENABLED) openSignupModalLegacy();

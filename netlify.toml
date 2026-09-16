@@ -8,6 +8,14 @@
 [build]
   publish = "."
   functions = "netlify/functions"
+  # CrowdStamp Pro demo (Vite/React) bouwen en onder /demo publiceren
+  command = "cd demo-pro && npm ci && npm run build && rm -rf ../demo && cp -r dist ../demo"
+
+# SPA-fallback voor de demo
+[[redirects]]
+  from = "/demo/*"
+  to = "/demo/index.html"
+  status = 200
 
 [[redirects]]
   from = "/app"

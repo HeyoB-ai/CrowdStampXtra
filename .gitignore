@@ -6,3 +6,6 @@
 
 # Dependencies
 node_modules/
+
+# Build-output van demo-pro (gegenereerd door de Netlify-build)
+/demo
