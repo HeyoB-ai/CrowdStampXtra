@@ -1,0 +1,19 @@
+# CrowdStamp Pro demo – aparte Netlify-site (bijv. demo.crowdstamp.nl)
+# Stel in Netlify "Base directory" in op demo-pro, of laat deze toml het regelen.
+[build]
+  base = "demo-pro"
+  command = "npm run build"
+  publish = "dist"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Permissions-Policy = "geolocation=(self), camera=(self)"
+    X-Frame-Options = "DENY"
+    X-Robots-Tag = "noindex"
+
+# SPA-fallback
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
