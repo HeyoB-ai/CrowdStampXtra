@@ -3,6 +3,7 @@
   [headers.values]
     Permissions-Policy = "geolocation=(self)"
     X-Frame-Options = "DENY"
+    X-Robots-Tag = "noindex"
 
 [build]
   publish = "."

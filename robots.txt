@@ -1,7 +1,2 @@
 User-agent: *
-Allow: /
-Disallow: /app.html
-Disallow: /app
-Disallow: /.netlify/
-
-Sitemap: https://crowdstamp.nl/sitemap.xml
+Disallow: /

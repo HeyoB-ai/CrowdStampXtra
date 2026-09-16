@@ -7,15 +7,20 @@
 <title>CrowdStamp — Weet altijd wie er op locatie aan het werk is</title>
 <meta name="description" content="CrowdStamp registreert aanwezigheid, locatie en voortgang van je onderaannemers, monteurs of medewerkers. Eén tik. Geen gedoe."/>
 
-<link rel="canonical" href="https://crowdstamp.nl/"/>
-<meta name="robots" content="index, follow"/>
+<!-- CrowdStampXtra: losstaande demo-site, los van crowdstamp.nl.
+     SITE_URL is de enige plek die je hoeft in te vullen: og:url, og:image, twitter:image
+     en DEMO_URL worden hiervan afgeleid. Geen canonical, wel noindex. -->
+<script>
+  const SITE_URL = 'https://CROWDSTAMPXTRA.netlify.app'; // TODO: vervang door de echte Netlify-URL van deze site
+</script>
+<meta name="robots" content="noindex, nofollow"/>
 
 <meta property="og:type" content="website"/>
-<meta property="og:url" content="https://crowdstamp.nl/"/>
+<meta property="og:url" content="https://CROWDSTAMPXTRA.netlify.app/"/>
 <meta property="og:site_name" content="CrowdStamp"/>
 <meta property="og:title" content="CrowdStamp — Weet altijd wie er op locatie aan het werk is"/>
 <meta property="og:description" content="CrowdStamp registreert aanwezigheid, locatie en voortgang van je onderaannemers, monteurs of medewerkers. Eén tik. Geen gedoe."/>
-<meta property="og:image" content="https://crowdstamp.nl/og-image.png"/>
+<meta property="og:image" content="https://CROWDSTAMPXTRA.netlify.app/og-image.png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
 <meta property="og:locale" content="nl_NL"/>
@@ -23,7 +28,17 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="CrowdStamp — Weet altijd wie er op locatie aan het werk is"/>
 <meta name="twitter:description" content="CrowdStamp registreert aanwezigheid, locatie en voortgang van je onderaannemers, monteurs of medewerkers. Eén tik. Geen gedoe."/>
-<meta name="twitter:image" content="https://crowdstamp.nl/og-image.png"/>
+<meta name="twitter:image" content="https://CROWDSTAMPXTRA.netlify.app/og-image.png"/>
+<script>
+  // Meta-URL's afleiden van SITE_URL (de statische waarden hierboven zijn de fallback).
+  (function () {
+    const base = SITE_URL.replace(/\/$/, '');
+    const set = (sel, val) => { const el = document.querySelector(sel); if (el) el.setAttribute('content', val); };
+    set('meta[property="og:url"]', base + '/');
+    set('meta[property="og:image"]', base + '/og-image.png');
+    set('meta[name="twitter:image"]', base + '/og-image.png');
+  })();
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -621,7 +636,7 @@ footer{
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "CrowdStamp",
-  "url": "https://crowdstamp.nl/",
+  "url": "https://CROWDSTAMPXTRA.netlify.app/",
   "email": "info@crowdstamp.nl",
   "description": "CrowdStamp registreert aanwezigheid, locatie en voortgang van je onderaannemers, monteurs of medewerkers. Eén tik. Geen gedoe."
 }
@@ -632,7 +647,7 @@ footer{
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "CrowdStamp",
-  "url": "https://crowdstamp.nl/",
+  "url": "https://CROWDSTAMPXTRA.netlify.app/",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web",
   "inLanguage": "nl",
@@ -1056,7 +1071,8 @@ footer{
 // SIGNUP_ENABLED = true   → de oorspronkelijke signup-modal (/.netlify/functions/signup).
 // ════════════════════════════════════════════════════════
 const SIGNUP_ENABLED = false;
-const DEMO_URL = 'https://demo.crowdstamp.nl';
+// TODO: DEMO_URL wijst voorlopig naar deze site zelf (SITE_URL); pas aan zodra de demo een eigen URL heeft.
+const DEMO_URL = SITE_URL;
 
 function openSignupModal() {
   if (SIGNUP_ENABLED) openSignupModalLegacy();
