@@ -7,6 +7,17 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="theme-color" content="#ffffff"/>
 <title>CrowdStamp</title>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     CONFIGURATIE — vul deze twee waarden in (Supabase → Project Settings → API)
+       SUPABASE_URL      : "Project URL",  bijv. https://abcdefghijkl.supabase.co
+       SUPABASE_ANON_KEY : "anon public"-key (NIET de service_role-key)
+     Dit is de enige plek in app.html waar deze waarden staan.
+     ════════════════════════════════════════════════════════════════════════ -->
+<script>
+  const SUPABASE_URL = 'https://JOUWPROJECT.supabase.co';
+  const SUPABASE_ANON_KEY = 'JOUW_ANON_KEY';
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet"/>
@@ -2358,9 +2369,15 @@ svg{display:block}
 console.log('Script loaded, calling initApp');
 // ════════════════════════════════════════════════════════
 // Supabase config
+// SUPABASE_URL en SUPABASE_ANON_KEY staan bovenaan in <head> (blok "CONFIGURATIE").
 // ════════════════════════════════════════════════════════
-const SUPABASE_URL = 'https://ojowaqxivoegmngkoztk.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qb3dhcXhpdm9lZ21uZ2tvenRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2ODczNTgsImV4cCI6MjA5NDI2MzM1OH0.XTzdUPUWvqpny4mVknaauGXt3olNC0Lyo-2pbQnVj8M';
+function supabaseGeconfigureerd() {
+  return !!SUPABASE_URL && !SUPABASE_URL.includes('JOUWPROJECT')
+    && !!SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== 'JOUW_ANON_KEY';
+}
+if (!supabaseGeconfigureerd()) {
+  console.warn('[CrowdStamp] Supabase is nog niet geconfigureerd: vul SUPABASE_URL en SUPABASE_ANON_KEY in bovenaan app.html.');
+}
 
 // Vang de URL-hash op vóór createClient: detectSessionInUrl wist de hash daarna.
 // Zo weten we of de gebruiker via een invite/recovery/signup-link binnenkomt.
@@ -2819,6 +2836,10 @@ async function doLogin() {
   const email = document.getElementById('auth-email').value.trim();
   const pass = document.getElementById('auth-password').value;
   if (!email || !pass) return;
+  if (!supabaseGeconfigureerd()) {
+    showAuthError('Supabase is nog niet geconfigureerd: vul SUPABASE_URL en SUPABASE_ANON_KEY in bovenaan app.html.');
+    return;
+  }
 
   const btn = document.getElementById('auth-btn');
   const lbl = document.getElementById('auth-btn-label');
