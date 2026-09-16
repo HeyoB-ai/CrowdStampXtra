@@ -7,20 +7,16 @@
 <title>CrowdStamp — Weet altijd wie er op locatie aan het werk is</title>
 <meta name="description" content="CrowdStamp registreert aanwezigheid, locatie en voortgang van je onderaannemers, monteurs of medewerkers. Eén tik. Geen gedoe."/>
 
-<!-- CrowdStampXtra: losstaande demo-site, los van crowdstamp.nl.
-     SITE_URL is de enige plek die je hoeft in te vullen: og:url, og:image, twitter:image
-     en DEMO_URL worden hiervan afgeleid. Geen canonical, wel noindex. -->
-<script>
-  const SITE_URL = 'https://CROWDSTAMPXTRA.netlify.app'; // TODO: vervang door de echte Netlify-URL van deze site
-</script>
+<!-- CrowdStampXtra: losstaande demo-site op https://crowdstampxtra.netlify.app, los van crowdstamp.nl.
+     Geen canonical, wel noindex (ook via X-Robots-Tag in netlify.toml). -->
 <meta name="robots" content="noindex, nofollow"/>
 
 <meta property="og:type" content="website"/>
-<meta property="og:url" content="https://CROWDSTAMPXTRA.netlify.app/"/>
+<meta property="og:url" content="https://crowdstampxtra.netlify.app/"/>
 <meta property="og:site_name" content="CrowdStamp"/>
 <meta property="og:title" content="CrowdStamp — Weet altijd wie er op locatie aan het werk is"/>
 <meta property="og:description" content="CrowdStamp registreert aanwezigheid, locatie en voortgang van je onderaannemers, monteurs of medewerkers. Eén tik. Geen gedoe."/>
-<meta property="og:image" content="https://CROWDSTAMPXTRA.netlify.app/og-image.png"/>
+<meta property="og:image" content="https://crowdstampxtra.netlify.app/og-image.png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
 <meta property="og:locale" content="nl_NL"/>
@@ -28,17 +24,7 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="CrowdStamp — Weet altijd wie er op locatie aan het werk is"/>
 <meta name="twitter:description" content="CrowdStamp registreert aanwezigheid, locatie en voortgang van je onderaannemers, monteurs of medewerkers. Eén tik. Geen gedoe."/>
-<meta name="twitter:image" content="https://CROWDSTAMPXTRA.netlify.app/og-image.png"/>
-<script>
-  // Meta-URL's afleiden van SITE_URL (de statische waarden hierboven zijn de fallback).
-  (function () {
-    const base = SITE_URL.replace(/\/$/, '');
-    const set = (sel, val) => { const el = document.querySelector(sel); if (el) el.setAttribute('content', val); };
-    set('meta[property="og:url"]', base + '/');
-    set('meta[property="og:image"]', base + '/og-image.png');
-    set('meta[name="twitter:image"]', base + '/og-image.png');
-  })();
-</script>
+<meta name="twitter:image" content="https://crowdstampxtra.netlify.app/og-image.png"/>
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -636,7 +622,7 @@ footer{
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "CrowdStamp",
-  "url": "https://CROWDSTAMPXTRA.netlify.app/",
+  "url": "https://crowdstampxtra.netlify.app/",
   "email": "info@crowdstamp.nl",
   "description": "CrowdStamp registreert aanwezigheid, locatie en voortgang van je onderaannemers, monteurs of medewerkers. Eén tik. Geen gedoe."
 }
@@ -647,7 +633,7 @@ footer{
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "CrowdStamp",
-  "url": "https://CROWDSTAMPXTRA.netlify.app/",
+  "url": "https://crowdstampxtra.netlify.app/",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web",
   "inLanguage": "nl",
@@ -919,8 +905,8 @@ footer{
     </button>
 
     <div id="demo-form-state">
-      <h2 class="modal-title">Bekijk de demo</h2>
-      <p class="modal-sub">Probeer CrowdStamp direct in je browser – zonder account. Alle gegevens in de demo zijn fictief.</p>
+      <h2 class="modal-title" id="demo-title">Plan een demo</h2>
+      <p class="modal-sub" id="demo-sub">Laat je gegevens achter, dan plannen we een persoonlijke rondleiding door CrowdStamp.</p>
 
       <a class="modal-btn" id="demo-open-link" href="#" target="_blank" rel="noopener" style="text-decoration:none;margin-top:0">Open de demo</a>
 
@@ -963,7 +949,7 @@ footer{
       </div>
       <h2 class="modal-title">Bedankt!</h2>
       <p class="modal-sub">We nemen binnen 1 werkdag contact op om een rondleiding in te plannen.</p>
-      <a class="modal-btn" id="demo-success-link" href="#" target="_blank" rel="noopener" style="text-decoration:none">Bekijk ondertussen de demo</a>
+      <a class="modal-btn" id="demo-success-link" href="#" target="_blank" rel="noopener" style="text-decoration:none;display:none">Bekijk ondertussen de demo</a>
       <button class="modal-btn" type="button" onclick="closeDemoModal()" style="background:var(--ink)">Sluiten</button>
     </div>
   </div>
@@ -1071,8 +1057,11 @@ footer{
 // SIGNUP_ENABLED = true   → de oorspronkelijke signup-modal (/.netlify/functions/signup).
 // ════════════════════════════════════════════════════════
 const SIGNUP_ENABLED = false;
-// TODO: DEMO_URL wijst voorlopig naar deze site zelf (SITE_URL); pas aan zodra de demo een eigen URL heeft.
-const DEMO_URL = SITE_URL;
+// DEMO_LIVE = false → geen knop "Open de demo": de modal heet "Plan een demo" en toont
+//                     direct het rondleidingsformulier (aanvraag via Netlify Forms).
+// DEMO_LIVE = true  → knop "Open de demo" naar DEMO_URL, formulier inklapbaar eronder.
+const DEMO_LIVE = false;
+const DEMO_URL = 'https://demo.crowdstamp.nl'; // TODO: invullen zodra de demo online staat
 
 function openSignupModal() {
   if (SIGNUP_ENABLED) openSignupModalLegacy();
@@ -1081,14 +1070,30 @@ function openSignupModal() {
 
 // ── Demo-modal ──
 function openDemoModal() {
-  document.getElementById('demo-open-link').href = DEMO_URL;
-  document.getElementById('demo-success-link').href = DEMO_URL;
+  const openLink = document.getElementById('demo-open-link');
+  const successLink = document.getElementById('demo-success-link');
+  const toggle = document.getElementById('demo-toggle');
+  const form = document.getElementById('demo-form');
+
+  openLink.href = DEMO_URL;
+  successLink.href = DEMO_URL;
+  document.getElementById('demo-title').textContent = DEMO_LIVE ? 'Bekijk de demo' : 'Plan een demo';
+  document.getElementById('demo-sub').textContent = DEMO_LIVE
+    ? 'Probeer CrowdStamp direct in je browser – zonder account. Alle gegevens in de demo zijn fictief.'
+    : 'Laat je gegevens achter, dan plannen we een persoonlijke rondleiding door CrowdStamp.';
+  openLink.style.display = DEMO_LIVE ? '' : 'none';
+  successLink.style.display = DEMO_LIVE ? '' : 'none';
+  toggle.style.display = DEMO_LIVE ? '' : 'none';
+  // Zonder live demo staat het formulier direct open.
+  form.style.display = DEMO_LIVE ? 'none' : 'block';
+  toggle.setAttribute('aria-expanded', DEMO_LIVE ? 'false' : 'true');
+
   document.getElementById('demo-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
   document.getElementById('demo-form-state').style.display = '';
   document.getElementById('demo-success-state').style.display = 'none';
   document.getElementById('demo-error').classList.remove('show');
-  setTimeout(() => document.getElementById('demo-open-link').focus(), 50);
+  setTimeout(() => (DEMO_LIVE ? openLink : document.getElementById('demo-name')).focus(), 50);
 }
 
 function closeDemoModal() {
@@ -1096,8 +1101,6 @@ function closeDemoModal() {
   document.body.style.overflow = '';
   const form = document.getElementById('demo-form');
   form.reset();
-  form.style.display = 'none';
-  document.getElementById('demo-toggle').setAttribute('aria-expanded', 'false');
   document.getElementById('demo-submit-label').textContent = 'Rondleiding aanvragen';
   document.getElementById('demo-submit').disabled = false;
   document.getElementById('demo-error').classList.remove('show');
