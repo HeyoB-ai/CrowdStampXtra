@@ -1,12 +1,4 @@
-const Stripe = require('stripe');
-const { createClient } = require('@supabase/supabase-js');
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const sb = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-);
+const { envCheck, getSupabase, getStripe } = require('./lib/clients');
 
 const CORS = {
   'Content-Type': 'application/json',
@@ -20,6 +12,12 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: 'Method Not Allowed' }) };
   }
+
+  // Clients pas hier aanmaken: bij ontbrekende env een nette 503 i.p.v. een module-crash (502).
+  const envFout = envCheck(['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'STRIPE_SECRET_KEY'], CORS);
+  if (envFout) return envFout;
+  const sb = getSupabase();
+  const stripe = getStripe();
 
   let body;
   try { body = JSON.parse(event.body || '{}'); }

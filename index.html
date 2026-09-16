@@ -538,6 +538,30 @@ footer{
 }
 .modal-btn:active:not([disabled]){transform:scale(0.98)}
 .modal-btn[disabled]{opacity:0.5;cursor:not-allowed}
+.demo-toggle{
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink-2);
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.demo-toggle:hover{background:var(--bg-2);color:var(--ink)}
+.demo-toggle svg{transition:transform 0.2s}
+.demo-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.demo-toggle[aria-expanded="true"]{margin-bottom:6px}
 .modal-error{
   margin-top: 10px;
   padding: 10px 12px;
@@ -639,6 +663,15 @@ footer{
 <body>
 <!-- netlify forms deploy trigger -->
 
+<!-- Hidden static form so Netlify's build-time crawler detects "demo-aanvraag" -->
+<form name="demo-aanvraag" netlify netlify-honeypot="bot-field" hidden>
+  <input type="text" name="naam"/>
+  <input type="text" name="bedrijf"/>
+  <input type="email" name="email"/>
+  <input type="tel" name="telefoon"/>
+  <input type="text" name="bot-field"/>
+</form>
+
 <!-- Hidden static form so Netlify's build-time crawler detects "pro-contact" -->
 <form name="pro-contact" netlify netlify-honeypot="bot-field" hidden>
   <input type="text" name="naam"/>
@@ -670,8 +703,8 @@ footer{
     <h1>Weet altijd wie er<br/>op locatie aan het werk is</h1>
     <p class="sub">CrowdStamp registreert aanwezigheid, locatie en voortgang van je onderaannemers, monteurs of medewerkers. Eén tik. Geen gedoe.</p>
     <div class="hero-actions">
-      <button type="button" onclick="openSignupModal()" class="btn btn-primary">Gratis proberen</button>
-      <a href="#hoe" class="btn btn-outline">Bekijk demo</a>
+      <button type="button" onclick="openSignupModal()" class="btn btn-primary">Bekijk de demo</button>
+      <a href="#hoe" class="btn btn-outline">Hoe werkt het</a>
     </div>
   </div>
 </section>
@@ -813,7 +846,7 @@ footer{
         <div class="price-name">Starter</div>
         <div class="price-amount">Gratis</div>
         <div class="price-desc">1 project, max 3 gebruikers. Alle basisfuncties inbegrepen.</div>
-        <a href="/app" class="btn btn-ink">Gratis starten</a>
+        <button type="button" onclick="openSignupModal()" class="btn btn-ink">Bekijk de demo</button>
       </div>
 
       <div class="price-card featured">
@@ -821,7 +854,7 @@ footer{
         <div class="price-name">Groei</div>
         <div class="price-amount">€49<small>/maand</small></div>
         <div class="price-desc">Onbeperkt gebruikers, 3 projecten, CSV export, prioritaire support.</div>
-        <button type="button" onclick="openSignupModal()" class="btn btn-primary">Start 14 dagen gratis</button>
+        <button type="button" onclick="openSignupModal()" class="btn btn-primary">Bekijk de demo</button>
       </div>
 
       <div class="price-card">
@@ -839,8 +872,8 @@ footer{
 <section style="padding:24px 0 64px">
   <div class="cta-dark">
     <h2>Klaar om te beginnen?</h2>
-    <p class="sub">Probeer CrowdStamp 14 dagen gratis. Geen creditcard nodig.</p>
-    <button type="button" onclick="openSignupModal()" class="btn btn-primary">Start gratis</button>
+    <p class="sub">Probeer CrowdStamp direct in je browser – zonder account.</p>
+    <button type="button" onclick="openSignupModal()" class="btn btn-primary">Bekijk de demo</button>
   </div>
 </section>
 
@@ -863,7 +896,65 @@ footer{
   </div>
 </footer>
 
-<!-- SIGNUP MODAL -->
+<!-- DEMO MODAL (tijdelijk i.p.v. signup; zie SIGNUP_ENABLED in het script) -->
+<div class="modal-overlay" id="demo-modal" style="display:none">
+  <div class="modal-card">
+    <button class="modal-close" type="button" onclick="closeDemoModal()" aria-label="Sluiten">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6l-12 12"/></svg>
+    </button>
+
+    <div id="demo-form-state">
+      <h2 class="modal-title">Bekijk de demo</h2>
+      <p class="modal-sub">Probeer CrowdStamp direct in je browser – zonder account. Alle gegevens in de demo zijn fictief.</p>
+
+      <a class="modal-btn" id="demo-open-link" href="#" target="_blank" rel="noopener" style="text-decoration:none;margin-top:0">Open de demo</a>
+
+      <button type="button" class="demo-toggle" id="demo-toggle" onclick="toggleDemoForm()" aria-expanded="false" aria-controls="demo-form">
+        Liever een persoonlijke rondleiding?
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+
+      <form id="demo-form" name="demo-aanvraag" method="POST" data-netlify="true" netlify-honeypot="bot-field" style="display:none" onsubmit="event.preventDefault();submitDemoForm()">
+        <input type="hidden" name="form-name" value="demo-aanvraag"/>
+        <p style="display:none"><label>Niet invullen: <input name="bot-field"/></label></p>
+
+        <div class="modal-field">
+          <div class="modal-field-label">Naam</div>
+          <input id="demo-name" name="naam" type="text" placeholder="Jouw naam" autocomplete="name" minlength="2" required/>
+        </div>
+        <div class="modal-field">
+          <div class="modal-field-label">Bedrijf</div>
+          <input id="demo-company" name="bedrijf" type="text" placeholder="Naam van je bedrijf" autocomplete="organization" required/>
+        </div>
+        <div class="modal-field">
+          <div class="modal-field-label">E-mailadres</div>
+          <input id="demo-email" name="email" type="email" placeholder="jouw@email.nl" autocomplete="email" required/>
+        </div>
+        <div class="modal-field">
+          <div class="modal-field-label">Telefoonnummer <span style="font-weight:500;text-transform:none;letter-spacing:0">(optioneel)</span></div>
+          <input id="demo-phone" name="telefoon" type="tel" placeholder="+31 6 12345678" autocomplete="tel"/>
+        </div>
+
+        <button class="modal-btn" id="demo-submit" type="submit" style="background:var(--ink)">
+          <span id="demo-submit-label">Rondleiding aanvragen</span>
+        </button>
+        <div class="modal-error" id="demo-error"></div>
+      </form>
+    </div>
+
+    <div id="demo-success-state" style="display:none;text-align:center">
+      <div class="modal-success-icon">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l5 5L19 7"/></svg>
+      </div>
+      <h2 class="modal-title">Bedankt!</h2>
+      <p class="modal-sub">We nemen binnen 1 werkdag contact op om een rondleiding in te plannen.</p>
+      <a class="modal-btn" id="demo-success-link" href="#" target="_blank" rel="noopener" style="text-decoration:none">Bekijk ondertussen de demo</a>
+      <button class="modal-btn" type="button" onclick="closeDemoModal()" style="background:var(--ink)">Sluiten</button>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNUP MODAL (legacy – alleen actief als SIGNUP_ENABLED = true) -->
 <div class="modal-overlay" id="signup-modal" style="display:none">
   <div class="modal-card">
     <button class="modal-close" type="button" onclick="closeSignupModal()" aria-label="Sluiten">
@@ -958,7 +1049,117 @@ footer{
 </div>
 
 <script>
+// ════════════════════════════════════════════════════════
+// Aanmeldflow-schakelaar
+// SIGNUP_ENABLED = false  → alle "Bekijk de demo"-knoppen openen de demo-modal
+//                           (link naar DEMO_URL + aanvraagformulier via Netlify Forms).
+// SIGNUP_ENABLED = true   → de oorspronkelijke signup-modal (/.netlify/functions/signup).
+// ════════════════════════════════════════════════════════
+const SIGNUP_ENABLED = false;
+const DEMO_URL = 'https://demo.crowdstamp.nl';
+
 function openSignupModal() {
+  if (SIGNUP_ENABLED) openSignupModalLegacy();
+  else openDemoModal();
+}
+
+// ── Demo-modal ──
+function openDemoModal() {
+  document.getElementById('demo-open-link').href = DEMO_URL;
+  document.getElementById('demo-success-link').href = DEMO_URL;
+  document.getElementById('demo-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('demo-form-state').style.display = '';
+  document.getElementById('demo-success-state').style.display = 'none';
+  document.getElementById('demo-error').classList.remove('show');
+  setTimeout(() => document.getElementById('demo-open-link').focus(), 50);
+}
+
+function closeDemoModal() {
+  document.getElementById('demo-modal').style.display = 'none';
+  document.body.style.overflow = '';
+  const form = document.getElementById('demo-form');
+  form.reset();
+  form.style.display = 'none';
+  document.getElementById('demo-toggle').setAttribute('aria-expanded', 'false');
+  document.getElementById('demo-submit-label').textContent = 'Rondleiding aanvragen';
+  document.getElementById('demo-submit').disabled = false;
+  document.getElementById('demo-error').classList.remove('show');
+  document.querySelectorAll('#demo-form .modal-field.error').forEach(el => el.classList.remove('error'));
+}
+
+function toggleDemoForm() {
+  const form = document.getElementById('demo-form');
+  const toggle = document.getElementById('demo-toggle');
+  const opening = form.style.display === 'none' || !form.style.display;
+  form.style.display = opening ? 'block' : 'none';
+  toggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
+  if (opening) setTimeout(() => document.getElementById('demo-name').focus(), 50);
+}
+
+async function submitDemoForm() {
+  const naam = document.getElementById('demo-name').value.trim();
+  const bedrijf = document.getElementById('demo-company').value.trim();
+  const email = document.getElementById('demo-email').value.trim();
+  const telefoon = document.getElementById('demo-phone').value.trim();
+  const errorEl = document.getElementById('demo-error');
+  const submitBtn = document.getElementById('demo-submit');
+  const submitLabel = document.getElementById('demo-submit-label');
+
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  document.getElementById('demo-name').closest('.modal-field').classList.toggle('error', naam.length < 2);
+  document.getElementById('demo-company').closest('.modal-field').classList.toggle('error', !bedrijf);
+  document.getElementById('demo-email').closest('.modal-field').classList.toggle('error', !emailValid);
+  errorEl.classList.remove('show');
+
+  if (naam.length < 2 || !bedrijf || !email) {
+    errorEl.textContent = 'Vul naam, bedrijf en e-mailadres in';
+    errorEl.classList.add('show');
+    return;
+  }
+  if (!emailValid) {
+    errorEl.textContent = 'Voer een geldig e-mailadres in';
+    errorEl.classList.add('show');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitLabel.innerHTML = '<div class="modal-spinner"></div>';
+
+  try {
+    const body = new URLSearchParams({
+      'form-name': 'demo-aanvraag',
+      'naam': naam,
+      'bedrijf': bedrijf,
+      'email': email,
+      'telefoon': telefoon,
+      'bot-field': document.querySelector('#demo-form [name="bot-field"]').value || ''
+    }).toString();
+
+    const r = await fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+
+    document.getElementById('demo-form-state').style.display = 'none';
+    document.getElementById('demo-success-state').style.display = '';
+  } catch (e) {
+    errorEl.textContent = 'Versturen mislukt: ' + e.message;
+    errorEl.classList.add('show');
+    submitBtn.disabled = false;
+    submitLabel.textContent = 'Rondleiding aanvragen';
+  }
+}
+
+['demo-name','demo-company','demo-email'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', () => el.closest('.modal-field')?.classList.remove('error'));
+});
+
+// ── Legacy signup-modal (SIGNUP_ENABLED = true) ──
+function openSignupModalLegacy() {
   document.getElementById('signup-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
   document.getElementById('signup-form-state').style.display = '';
@@ -1134,6 +1335,9 @@ async function submitContactForm() {
   if (el) el.addEventListener('input', () => el.closest('.modal-field')?.classList.remove('error'));
 });
 
+document.getElementById('demo-modal').addEventListener('click', function(e) {
+  if (e.target.id === 'demo-modal') closeDemoModal();
+});
 document.getElementById('signup-modal').addEventListener('click', function(e) {
   if (e.target.id === 'signup-modal') closeSignupModal();
 });
@@ -1142,7 +1346,8 @@ document.getElementById('contact-modal').addEventListener('click', function(e) {
 });
 document.addEventListener('keydown', function(e) {
   if (e.key !== 'Escape') return;
-  if (document.getElementById('signup-modal').style.display === 'flex') closeSignupModal();
+  if (document.getElementById('demo-modal').style.display === 'flex') closeDemoModal();
+  else if (document.getElementById('signup-modal').style.display === 'flex') closeSignupModal();
   else if (document.getElementById('contact-modal').style.display === 'flex') closeContactModal();
 });
 </script>

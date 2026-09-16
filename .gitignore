@@ -3,3 +3,6 @@
 
 # Claude Code workspace
 .claude/
+
+# Dependencies
+node_modules/

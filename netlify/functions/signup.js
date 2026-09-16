@@ -2,14 +2,7 @@
 // Once the signup flow is stable, replace `error: err.message` with a generic
 // Dutch message and drop `details`/`stack` from the response body.
 
-const { createClient } = require('@supabase/supabase-js');
-
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-  auth: { autoRefreshToken: false, persistSession: false },
-});
+const { envCheck, getSupabase } = require('./lib/clients');
 
 const CORS = {
   'Content-Type': 'application/json',
@@ -22,7 +15,7 @@ function respond(statusCode, body) {
   return { statusCode, headers: CORS, body: JSON.stringify(body) };
 }
 
-async function emailExists(email) {
+async function emailExists(sb, email) {
   const target = email.toLowerCase();
   let page = 1;
   const perPage = 200;
@@ -45,15 +38,10 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
   if (event.httpMethod !== 'POST') return respond(405, { error: 'Method Not Allowed' });
 
-  // ── Env sanity (logged once per cold start, harmless to log per request) ──
-  console.log('[env] SUPABASE_URL set?', !!SUPABASE_URL, 'prefix:', SUPABASE_URL?.substring(0, 30));
-  console.log('[env] SUPABASE_SERVICE_ROLE_KEY set?', !!SUPABASE_SERVICE_ROLE_KEY, 'len:', SUPABASE_SERVICE_ROLE_KEY?.length);
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    return respond(500, {
-      error: 'Server is verkeerd geconfigureerd (SUPABASE_URL of SUPABASE_SERVICE_ROLE_KEY ontbreekt)',
-      step: 'env',
-    });
-  }
+  // ── Env-check + client pas hier aanmaken: nette 503 i.p.v. een module-crash (502) ──
+  const envFout = envCheck(['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'], CORS);
+  if (envFout) return envFout;
+  const sb = getSupabase();
 
   let body;
   try { body = JSON.parse(event.body || '{}'); }
@@ -79,7 +67,7 @@ exports.handler = async (event) => {
     // ── Step 1: check duplicate email ──
     step = 'check_email';
     console.log('[step] check_email');
-    const exists = await emailExists(email);
+    const exists = await emailExists(sb, email);
     console.log('[step] check_email result:', exists);
     if (exists) {
       return respond(400, { error: 'Dit e-mailadres is al geregistreerd', step });

@@ -1,10 +1,4 @@
-const { createClient } = require('@supabase/supabase-js');
-
-const sb = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-);
+const { envCheck, getSupabase } = require('./lib/clients');
 
 const CORS = {
   'Content-Type': 'application/json',
@@ -19,7 +13,7 @@ function respond(statusCode, body) {
   return { statusCode, headers: CORS, body: JSON.stringify(body) };
 }
 
-async function emailExists(email) {
+async function emailExists(sb, email) {
   const target = email.toLowerCase();
   let page = 1;
   const perPage = 200;
@@ -36,6 +30,11 @@ async function emailExists(email) {
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
   if (event.httpMethod !== 'POST') return respond(405, { error: 'Method Not Allowed' });
+
+  // Client pas hier aanmaken: bij ontbrekende env een nette 503 i.p.v. een module-crash (502).
+  const envFout = envCheck(['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'], CORS);
+  if (envFout) return envFout;
+  const sb = getSupabase();
 
   // ── Auth ──
   const authHeader = event.headers.authorization || event.headers.Authorization;
@@ -70,7 +69,7 @@ exports.handler = async (event) => {
 
   try {
     // ── Duplicate check ──
-    if (await emailExists(email)) {
+    if (await emailExists(sb, email)) {
       return respond(400, { error: 'Dit e-mailadres is al geregistreerd' });
     }
 

@@ -1,10 +1,4 @@
-const { createClient } = require('@supabase/supabase-js');
-
-const sb = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-);
+const { envCheck, getSupabase } = require('./lib/clients');
 
 const CORS = {
   'Content-Type': 'application/json',
@@ -31,7 +25,7 @@ function canEngage(company) {
   return false;
 }
 
-async function findProfileByEmail(email) {
+async function findProfileByEmail(sb, email) {
   const { data, error } = await sb
     .from('profiles')
     .select('id, company_id')
@@ -44,6 +38,11 @@ async function findProfileByEmail(email) {
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
   if (event.httpMethod !== 'POST') return respond(405, { error: 'Method Not Allowed' });
+
+  // Client pas hier aanmaken: bij ontbrekende env een nette 503 i.p.v. een module-crash (502).
+  const envFout = envCheck(['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'], CORS);
+  if (envFout) return envFout;
+  const sb = getSupabase();
 
   // ── Auth ──
   const authHeader = event.headers.authorization || event.headers.Authorization;
@@ -96,7 +95,7 @@ exports.handler = async (event) => {
     let contractorCompanyId = null;
     let invited = false;
 
-    const existing = await findProfileByEmail(email);
+    const existing = await findProfileByEmail(sb, email);
     if (existing && existing.company_id) {
       // Profiel bestaat al → koppel aan diens bestaande company.
       contractorCompanyId = existing.company_id;

@@ -1,13 +1,4 @@
-const Stripe = require('stripe');
-const { createClient } = require('@supabase/supabase-js');
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-const sb = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-);
+const { envCheck, getSupabase, getStripe } = require('./lib/clients');
 
 function planFromPrice(priceId) {
   if (priceId === process.env.STRIPE_GROWTH_PRICE_ID) return 'growth';
@@ -33,6 +24,12 @@ exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
+
+  // Clients pas hier aanmaken: bij ontbrekende env een nette 503 i.p.v. een module-crash (502).
+  const envFout = envCheck(['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET']);
+  if (envFout) return envFout;
+  const sb = getSupabase();
+  const stripe = getStripe();
 
   const sig = event.headers['stripe-signature'] || event.headers['Stripe-Signature'];
   if (!sig) return { statusCode: 400, body: 'Missing stripe-signature header' };
